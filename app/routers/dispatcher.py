@@ -1,8 +1,12 @@
 import asyncio
 
+from app.services.estadistica.curva_normal import calcular_puntaje_z_y_curva
 from app.services.estadistica.moda import calcular_moda_paso_a_paso, calcular_moda_datos_agrupados
 from app.services.estadistica.variabilidad import calcular_varianza_paso_a_paso, calcular_varianza_datos_agrupados
+
 from app.utils.formatters import clean_data_for_json
+
+
 
 # IMPORTAMOS NUESTRO NUEVO MOTOR DIDÁCTICO
 from app.services.estadistica.tendencia_central import calcular_media_paso_a_paso, calcular_media_datos_agrupados, \
@@ -106,6 +110,20 @@ async def dispatch_message(payload: dict) -> dict:
             k_val = int(parametros.get("k", 50))
             datos_crudos = await asyncio.to_thread(calcular_percentil_datos_agrupados, parametros.get("clases", []),
                                                    parametros.get("contexto", ""), k_val)
+            respuesta["estado"], respuesta["datos"] = "exito", datos_crudos
+            # NUEVA ACCIÓN: Puntaje Z y Áreas
+        elif accion == "calcular_puntaje_z":
+            media = float(parametros.get("media", 100))
+            desviacion = float(parametros.get("desviacion", 15))
+            x_val = float(parametros.get("x", 115))
+            tipo_area = parametros.get("tipo_area", "menor")
+
+            # Extraemos x2 (puede ser None si no lo mandan)
+            x2_val_raw = parametros.get("x2")
+            x2_val = float(x2_val_raw) if x2_val_raw is not None else None
+
+            datos_crudos = await asyncio.to_thread(calcular_puntaje_z_y_curva, media, desviacion, x_val, tipo_area,
+                                                   x2_val, "Puntaje")
             respuesta["estado"], respuesta["datos"] = "exito", datos_crudos
         else:
             respuesta["estado"] = "error"
