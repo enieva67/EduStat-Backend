@@ -79,25 +79,27 @@ def calcular_chi2_bondad(datos: list, esperadas: list = None, tipo_ingreso: str 
         "paciente_x": round(chi2_stat, 2), "paciente_z": 0.0, "percentil": alfa * 100, "tipo_area": "cola_der",
         "pasos": [
             {
-                "paso_num": 1, "titulo": "Frecuencias Observadas (O) vs Esperadas (E)",
+                "paso_num": 1,
+                "titulo": "Frecuencias Observadas (O) vs Esperadas (E)",
                 "explicacion": msg_esp,
                 "formula_latex": f"\\text{{Total }}: {total_obs} \\quad gl = k - 1 = {n_cats} - 1 = {df}"
             },
             {
-                "paso_num": 2, "titulo": "Cálculo del Estadístico ($\\chi^2$)",
+                "paso_num": 2,
+                "titulo": "Cálculo del Estadístico (χ²)",  # <-- Unicode χ²
                 "explicacion": "Calculamos la diferencia entre lo que observamos y lo que esperábamos, lo elevamos al cuadrado (para quitar negativos) y lo dividimos por lo esperado.",
                 "formula_latex": f"\\chi^2 = \\Sigma \\frac{{(O - E)^2}}{{E}} = {str_suma} = {round(chi2_stat, 3)}"
             },
             {
-                "paso_num": 3, "titulo": "Valor Crítico y Valor P",
-                "explicacion": f"Buscamos la frontera de la zona de rechazo en la tabla Ji-Cuadrado con {df} grados de libertad y alfa {alfa}.",
+                "paso_num": 3,
+                "titulo": "Valor Crítico y Valor P",
+                "explicacion": f"Buscamos la frontera de la zona de rechazo en la tabla Ji-Cuadrado con {df} grados de libertad y un alfa (α) de {alfa}.",
                 "formula_latex": f"\\chi^2_{{crit}} = {round(crit_val, 3)} \\quad \\text{{Valor P}} = {round(p_val, 4)}"
             }
         ],
         "resultado_final": round(p_val, 4),
-        "interpretacion": f"Como el p-valor ({round(p_val, 4)}) es {'menor' if rechazo else 'mayor'} que alfa, {decision} $H_0$. Las frecuencias observadas {'NO se ajustan' if rechazo else 'SÍ se ajustan'} a las esperadas."
+        "interpretacion": f"Como el p-valor ({round(p_val, 4)}) es {'menor' if rechazo else 'mayor'} que alfa (α), {decision} H₀. Las frecuencias observadas {'NO se ajustan' if rechazo else 'SÍ se ajustan'} a las esperadas."
     }
-
 
 def calcular_chi2_independencia(matriz: list, raw_x: list = None, raw_y: list = None, tipo_ingreso: str = "tabla",
                                 alfa: float = 0.05, contexto: str = "Variables") -> dict:
@@ -131,21 +133,24 @@ def calcular_chi2_independencia(matriz: list, raw_x: list = None, raw_y: list = 
         "paciente_x": round(chi2_stat, 2), "paciente_z": 0.0, "percentil": alfa * 100, "tipo_area": "cola_der",
         "pasos": [
             {
-                "paso_num": 1, "titulo": "Armar la Tabla y Grados de Libertad",
+                "paso_num": 1,
+                "titulo": "Armar la Tabla y Grados de Libertad",
                 "explicacion": f"{msg_ingreso} Para saber qué curva usar, calculamos los grados de libertad: (filas - 1) * (columnas - 1).",
                 "formula_latex": f"gl = (f-1)(c-1) = {df}"
             },
             {
-                "paso_num": 2, "titulo": "Frecuencias Esperadas (E)",
+                "paso_num": 2,
+                "titulo": "Frecuencias Esperadas (E)",
                 "explicacion": "Si ambas variables fueran 100% independientes, ¿cuánta gente caería en cada celda? El sistema calcula esto multiplicando los totales de cada fila por los de cada columna.",
                 "formula_latex": "E = \\frac{\\text{Total Fila} \\cdot \\text{Total Columna}}{\\text{Gran Total}}"
             },
             {
-                "paso_num": 3, "titulo": "El Estadístico ($\\chi^2$) y Decisión",
+                "paso_num": 3,
+                "titulo": "El Estadístico (χ²) y Decisión",  # <-- Unicode χ²
                 "explicacion": "Comparamos la tabla Observada contra la tabla Esperada. Si la diferencia es inmensa, el número crece y cae en la zona roja de rechazo.",
                 "formula_latex": f"\\chi^2 = {round(chi2_stat, 3)} \\quad \\chi^2_{{crit}} = {round(crit_val, 3)} \\quad P = {round(p_val, 4)}"
             }
         ],
         "resultado_final": round(p_val, 4),
-        "interpretacion": f"{decision} $H_0$. Con un alfa de {alfa}, la evidencia sugiere que las variables {'ESTÁN ASOCIADAS (Dependen una de otra)' if rechazo else 'SON INDEPENDIENTES'}."
+        "interpretacion": f"{decision} H₀. Con un alfa (α) de {alfa}, la evidencia sugiere que las variables {'ESTÁN ASOCIADAS (Dependen una de otra)' if rechazo else 'SON INDEPENDIENTES'}."
     }

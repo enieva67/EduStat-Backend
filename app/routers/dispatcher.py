@@ -7,6 +7,7 @@ from app.utils.formatters import clean_data_for_json
 from app.services.estadistica.correlacion import calcular_pearson_paso_a_paso
 from app.services.estadistica.correlacion import calcular_spearman_paso_a_paso
 from app.services.estadistica.correlacion import calcular_phi_paso_a_paso
+from app.services.estadistica.poder import calcular_poder_muestra
 from app.services.estadistica.inferencia import calcular_intervalo_confianza_media
 from app.services.estadistica.inferencia import (
     calcular_intervalo_confianza_media,
@@ -208,6 +209,21 @@ async def dispatch_message(payload: dict) -> dict:
 
             datos_crudos = await asyncio.to_thread(calcular_chi2_independencia, matriz, raw_x, raw_y, tipo_ingreso,
                                                    alfa, "Variables")
+            respuesta["estado"], respuesta["datos"] = "exito", datos_crudos
+            # NUEVA ACCIÓN: Poder Estadístico y Tamaño de Muestra
+        elif accion == "calcular_poder_muestra":
+            tipo_calculo = parametros.get("tipo_calculo", "calcular_n")
+            d_cohen = float(parametros.get("d_cohen", 0.5))
+            alfa = float(parametros.get("alfa", 0.05))
+
+            n_raw = parametros.get("n")
+            n_val = float(n_raw) if n_raw is not None else None
+
+            poder_raw = parametros.get("poder")
+            poder_val = float(poder_raw) if poder_raw is not None else None
+
+            datos_crudos = await asyncio.to_thread(calcular_poder_muestra, tipo_calculo, d_cohen, alfa, n_val,
+                                                   poder_val, "Estudio")
             respuesta["estado"], respuesta["datos"] = "exito", datos_crudos
         else:
             respuesta["estado"] = "error"

@@ -189,26 +189,28 @@ def calcular_prueba_hipotesis_media(mu_pob: float, x_barra: float, desviacion: f
         "tipo_area": tipo_prueba,
         "pasos": [
             {
-                "paso_num": 1, "titulo": "Paso 1: Plantear Hipótesis",
-                "explicacion": f"Asumimos que la media poblacional es {mu_pob} ($H_0$). Nuestra prueba es a {explicacion_h1}",
+                "paso_num": 1,
+                "titulo": "Paso 1: Plantear Hipótesis (H₀ vs H₁)",
+                "explicacion": f"Asumimos que la media poblacional es {mu_pob} (H₀). Nuestra prueba es a {explicacion_h1}",
                 "formula_latex": f"H_0: \\mu = {mu_pob} \\quad \\text{{vs}} \\quad {h1_latex}"
             },
             {
-                "paso_num": 2, "titulo": "Paso 2: Valor Crítico (La frontera)",
-                "explicacion": f"Usando un nivel de significancia $\\alpha={alfa}$ y la distribución {nombre_test}, calculamos dónde empieza la zona de rechazo extrema.",
+                "paso_num": 2,
+                "titulo": "Paso 2: Valor Crítico (La frontera)",
+                "explicacion": f"Usando un nivel de significancia α = {alfa} y la distribución {nombre_test}, calculamos dónde empieza la zona de rechazo extrema.",
                 "formula_latex": f"{simbolo_stat}_{{crit}} = {str_critico}"
             },
             {
-                "paso_num": 3, "titulo": "Paso 3: Estadístico de Prueba (Nuestra Muestra)",
-                "explicacion": f"Nuestra muestra arrojó una media de {x_barra}. Calculamos cuántos Errores Estándar (SE={round(error_estandar, 2)}) se alejó del centro.",
+                "paso_num": 3,
+                "titulo": "Paso 3: Estadístico de Prueba (Nuestra Muestra)",
+                "explicacion": f"Nuestra muestra arrojó una media (x̄) de {x_barra}. Calculamos cuántos Errores Estándar (SE = {round(error_estandar, 2)}) se alejó del centro.",
                 "formula_latex": f"{simbolo_stat}_{{calc}} = \\frac{{{x_barra} - {mu_pob}}}{{{round(error_estandar, 3)}}} = {round(stat_prueba, 3)}"
             },
             {
-                "paso_num": 4, "titulo": "Paso 4: El Valor P (P-value)",
-                "explicacion": f"El Valor P nos dice la probabilidad de obtener una muestra tan extrema como la nuestra SI la Hipótesis Nula fuera cierta.",
+                "paso_num": 4,
+                "titulo": "Paso 4: El Valor P (P-value)",
+                "explicacion": "El Valor P nos dice la probabilidad de obtener una muestra tan extrema como la nuestra SI la Hipótesis Nula (H₀) fuera cierta.",
                 "formula_latex": f"\\text{{Valor P}} = {round(p_valor, 4)}"
             }
         ],
-        "resultado_final": round(p_valor, 4),
-        "interpretacion": conclusion_texto
     }
