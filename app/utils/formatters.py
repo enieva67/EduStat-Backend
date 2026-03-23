@@ -1,20 +1,35 @@
 import io
 import base64
+import numpy as np
 import math
 import matplotlib.pyplot as plt
 
 
 def clean_data_for_json(data):
     """
-    REGLA: Dart crashea con 'NaN' o 'Infinity' en JSON.
-    Esta función recursiva los convierte en None (que en JSON es 'null').
+    Escudo definitivo anti-crashes de JSON.
+    Traduce objetos de NumPy y limpia los NaN/Infinity para que Flutter no explote.
     """
+    # 1. Detectar y traducir enteros de NumPy
+    if isinstance(data, (np.integer, np.int64, np.int32)):
+        return int(data)
+
+    # 2. Detectar y traducir decimales de NumPy
+    if isinstance(data, (np.floating, np.float64, np.float32)):
+        if np.isnan(data) or np.isinf(data):
+            return None
+        return float(data)
+
+    # 3. Limpiar floats nativos corruptos
     if isinstance(data, float) and (math.isnan(data) or math.isinf(data)):
         return None
+
+    # 4. Magia recursiva para bucear por diccionarios y listas
     if isinstance(data, dict):
         return {k: clean_data_for_json(v) for k, v in data.items()}
     if isinstance(data, list):
         return [clean_data_for_json(i) for i in data]
+
     return data
 
 
