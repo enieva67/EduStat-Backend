@@ -213,17 +213,23 @@ async def dispatch_message(payload: dict) -> dict:
             # NUEVA ACCIÓN: Poder Estadístico y Tamaño de Muestra
         elif accion == "calcular_poder_muestra":
             tipo_calculo = parametros.get("tipo_calculo", "calcular_n")
-            d_cohen = float(parametros.get("d_cohen", 0.5))
+            tipo_ingreso = parametros.get("tipo_ingreso", "d_cohen")  # NUEVO
             alfa = float(parametros.get("alfa", 0.05))
 
-            n_raw = parametros.get("n")
-            n_val = float(n_raw) if n_raw is not None else None
+            # Parametros D_Cohen
+            d_cohen = float(parametros.get("d_cohen", 0.5)) if parametros.get("d_cohen") is not None else None
 
-            poder_raw = parametros.get("poder")
-            poder_val = float(poder_raw) if poder_raw is not None else None
+            # Parametros Medias Reales (NUEVOS)
+            mu0 = float(parametros.get("mu0", 100)) if parametros.get("mu0") is not None else None
+            mu1 = float(parametros.get("mu1", 130)) if parametros.get("mu1") is not None else None
+            sigma = float(parametros.get("sigma", 15)) if parametros.get("sigma") is not None else None
 
-            datos_crudos = await asyncio.to_thread(calcular_poder_muestra, tipo_calculo, d_cohen, alfa, n_val,
-                                                   poder_val, "Estudio")
+            # Parametros N y Poder
+            n_val = float(parametros.get("n")) if parametros.get("n") is not None else None
+            poder_val = float(parametros.get("poder")) if parametros.get("poder") is not None else None
+
+            datos_crudos = await asyncio.to_thread(calcular_poder_muestra, tipo_calculo, alfa, tipo_ingreso, d_cohen,
+                                                   mu0, mu1, sigma, n_val, poder_val, "Estudio")
             respuesta["estado"], respuesta["datos"] = "exito", datos_crudos
         else:
             respuesta["estado"] = "error"
