@@ -20,6 +20,11 @@ from app.services.data_manager.file_reader import procesar_archivo_base64
 
 from app.services.estadistica.tendencia_central import calcular_mediana_paso_a_paso      # NUEVO
 from app.services.estadistica.tendencia_central import calcular_mediana_datos_agrupados   # NUEVO
+from app.services.estadistica.comparacion_grupos import (
+    calcular_ttest_independiente,
+    calcular_z_proporciones,
+    calcular_mann_whitney
+)
 
 def procesar_diagnostico(parametros: dict) -> dict:
     return {
@@ -230,6 +235,44 @@ async def dispatch_message(payload: dict) -> dict:
 
             datos_crudos = await asyncio.to_thread(calcular_poder_muestra, tipo_calculo, alfa, tipo_ingreso, d_cohen,
                                                    mu0, mu1, sigma, n_val, poder_val, "Estudio")
+            respuesta["estado"], respuesta["datos"] = "exito", datos_crudos
+            # NUEVAS ACCIONES: COMPARACIÓN DE GRUPOS
+        elif accion == "calcular_ttest_indep":
+            datos_a = parametros.get("datos_a", [])
+            datos_b = parametros.get("datos_b", [])
+            alfa = float(parametros.get("alfa", 0.05))
+            tipo_prueba = parametros.get("tipo_prueba", "dos_colas")
+            ctx_a = parametros.get("ctx_a", "Grupo A")
+            ctx_b = parametros.get("ctx_b", "Grupo B")
+
+            datos_crudos = await asyncio.to_thread(calcular_ttest_independiente, datos_a, datos_b, alfa, tipo_prueba,
+                                                   ctx_a, ctx_b)
+            respuesta["estado"], respuesta["datos"] = "exito", datos_crudos
+
+        elif accion == "calcular_mann_whitney":
+            datos_a = parametros.get("datos_a", [])
+            datos_b = parametros.get("datos_b", [])
+            alfa = float(parametros.get("alfa", 0.05))
+            tipo_prueba = parametros.get("tipo_prueba", "dos_colas")
+            ctx_a = parametros.get("ctx_a", "Grupo A")
+            ctx_b = parametros.get("ctx_b", "Grupo B")
+
+            datos_crudos = await asyncio.to_thread(calcular_mann_whitney, datos_a, datos_b, alfa, tipo_prueba, ctx_a,
+                                                   ctx_b)
+            respuesta["estado"], respuesta["datos"] = "exito", datos_crudos
+
+        elif accion == "calcular_z_proporciones":
+            exitos_a = int(parametros.get("exitos_a", 0))
+            n_a = int(parametros.get("n_a", 1))
+            exitos_b = int(parametros.get("exitos_b", 0))
+            n_b = int(parametros.get("n_b", 1))
+            alfa = float(parametros.get("alfa", 0.05))
+            tipo_prueba = parametros.get("tipo_prueba", "dos_colas")
+            ctx_a = parametros.get("ctx_a", "Grupo A")
+            ctx_b = parametros.get("ctx_b", "Grupo B")
+
+            datos_crudos = await asyncio.to_thread(calcular_z_proporciones, exitos_a, n_a, exitos_b, n_b, alfa,
+                                                   tipo_prueba, ctx_a, ctx_b)
             respuesta["estado"], respuesta["datos"] = "exito", datos_crudos
         else:
             respuesta["estado"] = "error"
